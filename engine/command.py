@@ -1,6 +1,7 @@
 import pyttsx3
 import speech_recognition as sr
 import eel
+import time
 
 # Initialize the error counter
 error_counter = 0
@@ -11,6 +12,7 @@ def speak(text):
     voices = engine.getProperty("voices")
     engine.setProperty("voice", voices[0].id)
     engine.setProperty('rate', 174)
+    eel.DisplayMessage(text)
     engine.say(text)
     engine.runAndWait()
 
@@ -26,7 +28,6 @@ def restartListening():
         eel.ShowHood()  # Call the JavaScript function to show the hood UI
         error_counter = 0  # Reset the counter after showing the error message
 
-@eel.expose
 def takeCommand():
     global error_counter
     r = sr.Recognizer()
@@ -50,9 +51,8 @@ def takeCommand():
         query = r.recognize_google(audio, language="en-in")
         print(f"user said: {query}")
         eel.DisplayMessage(query)
-        speak(query)
-        eel.ShowHood()  # After success, show the hood UI or any other actions
-
+        time.sleep(2)
+    
         # Reset error counter after a successful recognition
         error_counter = 0
 
@@ -67,3 +67,25 @@ def takeCommand():
         return ""
 
     return query.lower()
+
+
+@eel.expose
+def allCommands():
+    try:
+        query= takeCommand()
+        print(query)
+
+        if "open" in query:
+            from engine.features import openCommand
+            openCommand(query)
+        elif "on youtube":
+            from engine.features import PlayYoutube
+            PlayYoutube(query)
+        else:
+            print("Not run")
+    except:
+        print("error")
+
+    eel.ShowHood()    
+
+        
