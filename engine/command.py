@@ -5,7 +5,7 @@ import time
 
 # Initialize the error counter
 error_counter = 0
-max_errors = 5  # Maximum number of allowed errors
+max_errors = 3  # Maximum number of allowed errors
 
 def speak(text):
     engine = pyttsx3.init("sapi5")
@@ -14,6 +14,7 @@ def speak(text):
     engine.setProperty('rate', 174)
     eel.DisplayMessage(text)
     engine.say(text)
+    eel.receiverText(text)
     engine.runAndWait()
 
 # This function restarts the microphone listening process
@@ -70,11 +71,15 @@ def takeCommand():
 
 
 @eel.expose
-def allCommands():
-    try:
+def allCommands(message=1):
+    if message==1:
         query= takeCommand()
         print(query)
-
+        eel.senderText(query)
+    else:
+        query=message
+        eel.senderText(query)
+    try:
         if "open" in query:
             from engine.features import openCommand
             openCommand(query)
@@ -82,24 +87,38 @@ def allCommands():
             from engine.features import PlayYoutube
             PlayYoutube(query)
         elif "send message" in query or "phone call" in query or "video call" in query:
-            from engine.features import findContact, whatsApp
-            flag = ""
+            from engine.features import findContact, whatsApp , makeCall , sendMessage
             contact_no, name = findContact(query)
             if(contact_no != 0):
+                speak("Which mode you want to use whatsapp or mobile")
+                preferance = takeCommand()
+                print(preferance)
 
-                if "send message" in query:
-                    flag = 'message'
-                    speak("what message to send")
-                    query = takeCommand()
-                    
-                elif "phone call" in query:
-                    flag = 'call'
-                else:
-                    flag = 'video call'
-                    
-                whatsApp(contact_no, query, flag, name)
+                if "mobile" in preferance:
+                    if "send message" in query or "send sms" in query: 
+                        speak("what message to send")
+                        message = takeCommand()
+                        sendMessage(message, contact_no, name)
+                    elif "phone call" in query:
+                        makeCall(name, contact_no)
+                    else:
+                        speak("please try again")
+                elif "whatsapp" in preferance:
+                    message = ""
+                    if "send message" in query:
+                        message = 'message'
+                        speak("what message to send")
+                        query = takeCommand()
+                                        
+                    elif "phone call" in query:
+                        message = 'call'
+                    else:
+                        message = 'video call'
+                                        
+                    whatsApp(contact_no, query, message, name)
         else:
-            print("Not run")
+            from engine.features import chatBot
+            chatBot(query)
     except:
         print("error")
 
