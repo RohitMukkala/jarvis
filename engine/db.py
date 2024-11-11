@@ -7,9 +7,9 @@ cursor = con.cursor()
 query = "CREATE TABLE IF NOT EXISTS sys_command(id integer primary key, name VARCHAR(100), path VARCHAR(1000))"
 cursor.execute(query)
 
-# query = "INSERT INTO sys_command VALUES (null,'powerpoint', 'C:\\Program Files\\Microsoft Office\\root\\Office16\\POWERPNT.EXE')"
-# cursor.execute(query)
-# con.commit()
+query = "INSERT INTO sys_command VALUES (null,'Command Prompt', 'C:\\Windows\\system32\\cmd.exe')"
+cursor.execute(query)
+con.commit()
 
 # query = "CREATE TABLE IF NOT EXISTS web_command(id integer primary key, name VARCHAR(100), url VARCHAR(1000))"
 # cursor.execute(query)
@@ -42,9 +42,9 @@ cursor.execute(query)
 # con.commit()
 
 # Search Contacts from database
-query = 'Amma'
-query = query.strip().lower()
+# query = 'Amma'
+# query = query.strip().lower()
 
-cursor.execute("SELECT mobile_no FROM contacts WHERE LOWER(name) LIKE ? OR LOWER(name) LIKE ?", ('%' + query + '%', query + '%'))
-results = cursor.fetchall()
-print(results[0][0])
+# cursor.execute("SELECT mobile_no FROM contacts WHERE LOWER(name) LIKE ? OR LOWER(name) LIKE ?", ('%' + query + '%', query + '%'))
+# results = cursor.fetchall()
+# print(results[0][0])
