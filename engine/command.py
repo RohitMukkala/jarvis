@@ -124,16 +124,18 @@ def allCommands(message=1):
                     else:
                         speak("Please try again.")
                 elif "whatsapp" in preference:
-                    message = ""
                     if "send message" in query:
-                        message = 'message'
                         speak("What message to send?")
-                        query = takeCommand()
+                        message = takeCommand()
+                        whatsApp(contact_no, message, "message", name)
                     elif "phone call" in query:
-                        message = 'call'
+                        whatsApp(contact_no, "", "call", name)
+                    elif "video call" in query:
+                        whatsApp(contact_no, "", "video call", name)
                     else:
-                        message = 'video call'
-                    whatsApp(contact_no, query, message, name)
+                        speak("Please try again.")
+                else:
+                    speak("Invalid mode selected. Please try again.")
         else:
             # Additional commands integrated here
             if 'wikipedia' in query:
@@ -209,6 +211,9 @@ def allCommands(message=1):
                 img = pyautogui.screenshot()
                 img.save(f"{name}.png")
                 speak("Screenshot saved.")
+            # elif 'jarvis' in query:
+            #     speak("Yes Sir!")
+            #     print("Yes Sir!")
             elif 'calculate' in query:
                 speak("Ready")
                 r = sr.Recognizer()
