@@ -13,7 +13,7 @@ def start():
 
     @eel.expose
     def init():
-        subprocess.call([r'device.bat'])
+        # subprocess.call([r'device.bat'])
         eel.hideLoader()
         speak("Ready for Face Authentication")
         flag = recoganize.AuthenticateFace()
