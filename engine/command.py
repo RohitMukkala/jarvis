@@ -14,6 +14,8 @@ import pyautogui
 import operator
 import requests
 import numpy as np
+
+from .chatbot import get_response
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import tensorflow as tf
 import joblib
@@ -308,7 +310,8 @@ def allCommands(message=1):
                 speak("Your result is")
                 speak(eval_binary_expr(*(my_string.split())))
             else:
-                speak("I'm sorry, I couldn't find a suitable command.")
+                response = get_response(query)
+                speak(response)
     except Exception as e:
         print("Error:", e)
 
