@@ -1,0 +1,59 @@
+Heart disease prediction using speak
+
+def heart_disease_command():
+    speak("Please provide the following health metrics for prediction. I will ask you each one by one.")
+    
+    try:
+        speak("What is your age?")
+        age = int(listen())  # Capture age input from the user
+
+        speak("What is your gender? Enter 1 for male and 0 for female.")
+        gender = int(listen())  # Capture gender input from the user
+
+        speak("What is your chest pain type? Enter a number between 0 and 3.")
+        chest_pain_type = int(listen())  # Capture chest pain type input
+
+        speak("What is your resting blood pressure in mm Hg?")
+        resting_bp = int(listen())  # Capture resting blood pressure
+
+        speak("What is your cholesterol level in mg/dl?")
+        cholesterol = int(listen())  # Capture cholesterol level
+
+        speak("Is your fasting blood sugar greater than 120 mg/dl? Answer 1 for yes, 0 for no.")
+        fasting_blood_sugar = int(listen())  # Capture fasting blood sugar
+
+        speak("What is your resting ECG? Answer 0, 1, or 2.")
+        resting_ecg = int(listen())  # Capture resting ECG value
+
+        speak("What is your max heart rate achieved?")
+        max_heart_rate = int(listen())  # Capture max heart rate
+
+        speak("Do you have exercise-induced angina? Answer 1 for yes, 0 for no.")
+        exercise_angina = int(listen())  # Capture exercise-induced angina response
+
+        speak("What is your old peak value?")
+        old_peak = float(listen())  # Capture old peak value
+
+        speak("What is the slope of the peak exercise ST segment? Enter 0, 1, or 2.")
+        slope = int(listen())  # Capture slope of the ST segment
+
+        speak("How many major vessels are colored by fluoroscopy? Enter a number between 0 and 3.")
+        vessels = int(listen())  # Capture the number of vessels colored
+
+        speak("What is your thalassemia status?")
+        thalassemia = int(listen())  # Capture thalassemia status
+
+        # Collect all the inputs into a list
+        features = [age, gender, chest_pain_type, resting_bp, cholesterol, fasting_blood_sugar, resting_ecg,
+                    max_heart_rate, exercise_angina, old_peak, slope, vessels, thalassemia]
+        
+        # Predict heart disease based on the input features
+        result = predict_heart_disease(features)
+        
+        if result == 1:
+            speak("The prediction indicates a high likelihood of heart disease.")
+        else:
+            speak("The prediction indicates a low likelihood of heart disease.")
+    
+    except ValueError:
+        speak("Invalid input detected. Please provide valid numerical values for each metric.")

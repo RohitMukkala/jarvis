@@ -1,4 +1,3 @@
-from pyexpat import model
 import pyttsx3
 import speech_recognition as sr
 import eel
@@ -14,12 +13,11 @@ import sys
 import pyautogui
 import operator
 import requests
+import numpy as np
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import tensorflow as tf
-import numpy as np
 import joblib
-
-
+import pyttsx3  # Library for text-to-speech
 
 
 def speak(text):
@@ -33,56 +31,6 @@ def speak(text):
     engine.runAndWait()
 
 
-# Initialize speech recognizer and text-to-speech engine
-recognizer = sr.Recognizer()
-engine = pyttsx3.init()
-
-def listen():
-    with sr.Microphone() as source:
-        print("Listening for your response...")
-        audio = recognizer.listen(source)
-    try:
-        response = recognizer.recognize_google(audio)
-        print("You said: " + response)
-        return response.lower()
-    except sr.UnknownValueError:
-        speak("Sorry, I didn't understand that. Could you repeat?")
-        return None
-    except sr.RequestError:
-        speak("Sorry, the speech service is unavailable.")
-        return None
-
-
-# def predict_heart_disease(data):
-#     data = preprocess_input(data)
-#     prediction = model.predict(data)
-
-#     # Assuming binary classification (0 = no disease, 1 = disease)
-#     if prediction[0] > 0.5:
-#         speak("You are at risk for heart disease.")
-#     else:
-#         speak("You are not at risk for heart disease.")
-
-# import tensorflow as tf
-
-# # Load heart disease prediction model
-# def load_heart_disease_model():
-#     model = tf.keras.models.load_model("heart_disease_model.h5")  # Update path as needed
-#     return model
-
-# # Initialize the model
-# heart_disease_model = load_heart_disease_model()
-
-# # Function to predict heart disease
-# def predict_heart_disease(features):
-#     input_data = np.array(features).reshape(1, -1)  # Ensure data shape matches model input
-#     prediction = heart_disease_model.predict(input_data)
-#     if prediction[0] == 0:
-#         print('The Person does not have Heart Disease')
-#         print(prediction)
-#     else:
-#         print('The Person has Heart Disease')
-#         print(prediction)
 
 def load_heart_disease_model():
     model = tf.keras.models.load_model("heart_disease_model.h5")  # Update path as needed
@@ -90,26 +38,25 @@ def load_heart_disease_model():
     return model, scaler
 
 # Initialize the model and scaler
-heart_disease_model, scaler = load_heart_disease_model()
+heart_disease_model, heart_disease_scaler = load_heart_disease_model()
 
-# Preprocessing function
-def preprocess_input(data):
+# Preprocess the input data
+def preprocess_heart_disease_input(data):
     data = np.array(data).reshape(1, -1)  # Ensure data shape matches model input
-    scaled_data = scaler.transform(data)  # Scale the data using the loaded scaler
+    scaled_data = heart_disease_scaler.transform(data)  # Scale the data using the loaded scaler
     return scaled_data
 
 # Function to predict heart disease
 def predict_heart_disease(features):
-    input_data = preprocess_input(features)
-    prediction = heart_disease_model.predict(input_data)[0][0]  # Get the raw prediction score
+    input_data = preprocess_heart_disease_input(features)
+    prediction_score = heart_disease_model.predict(input_data)[0][0]  # Get the raw prediction score
 
     # Apply threshold to get binary output
-    binary_output = 1 if prediction >= 0.5 else 0
-    print(f'Raw model prediction: {prediction} | Binary output: {binary_output}')
+    binary_output = 1 if prediction_score >= 0.5 else 0
+    print(f'Raw model prediction score: {prediction_score} | Binary output: {binary_output}')
+    return prediction_score, binary_output
 
-    return prediction,binary_output
-
-
+# Function to provide health suggestions based on individual metrics
 def suggest_health_improvements(metrics):
     suggestions = []
     # Extract individual metrics
@@ -139,71 +86,22 @@ def suggest_health_improvements(metrics):
 
 # Main function to handle the heart disease prediction process
 def heart_disease_assessment():
-    speak("Please provide the following health metrics for prediction. I will ask you each one by one.")
-
     # Example input metrics; replace these with real user input in a full implementation
-    speak("What is your age?")
-    age = int(listen())
-
-    speak("What is your gender? Enter 1 for male and 0 for female.")
-    gender = int(listen())
-
-    speak("What is your chest pain type? Enter a number between 0 and 3.")
-    chest_pain_type = int(listen())
-
-    speak("What is your resting blood pressure in mm Hg?")
-    resting_bp = int(listen())
-
-    speak("What is your cholesterol level in mg/dl?")
-    cholesterol = int(listen())
-
-    speak("Is your fasting blood sugar greater than 120 mg/dl? Answer 1 for yes, 0 for no.")
-    fasting_blood_sugar = int(listen())
-
-    speak("What is your resting ECG? Answer 0, 1, or 2.")
-    resting_ecg = int(listen())
-
-    speak("What is your max heart rate achieved?")
-    max_heart_rate = int(listen())
-
-    speak("Do you have exercise-induced angina? Answer 1 for yes, 0 for no.")
-    exercise_angina = int(listen())
-
-    speak("What is your old peak value?")
-    old_peak = float(listen())
-
-    speak("What is the slope of the peak exercise ST segment? Enter 0, 1, or 2.")
-    slope = int(listen())
-
-    speak("How many major vessels are colored by fluoroscopy? Enter a number between 0 and 3.")
-    vessels = int(listen())
-
-    speak("What is your thalassemia status?")
-    thalassemia = int(listen())
-
-        # Collect all the inputs into a list
-    features = [age, gender, chest_pain_type, resting_bp, cholesterol, fasting_blood_sugar, resting_ecg,
-                    max_heart_rate, exercise_angina, old_peak, slope, vessels, thalassemia]
-        
-        # Predict heart disease based on the input features
-
-    # features = [
-    #     63,  # Age
-    #     1,   # Gender
-    #     3,   # Chest pain type
-    #     145, # Resting blood pressure
-    #     233, # Cholesterol
-    #     1,   # Fasting blood sugar
-    #     0,   # Resting ECG
-    #     150, # Max heart rate achieved
-    #     0,   # Exercise-induced angina
-    #     2.3,   # Old peak
-    #     0,   # Slope of the peak exercise ST segment
-    #     0,   # Number of major vessels (0-3) colored by fluoroscopy
-    #     1    # Thalassemia
-    # ]
-    # result = predict_heart_disease(features)
-
+    features = [
+        44,  # Age
+        1,   # Gender
+        0,   # Chest pain type
+        112, # Resting blood pressure
+        290, # Cholesterol
+        0,   # Fasting blood sugar
+        0,   # Resting ECG
+        153, # Max heart rate achieved
+        0,   # Exercise-induced angina
+        0,   # Old peak
+        2,   # Slope of the peak exercise ST segment
+        1,   # Number of major vessels (0-3) colored by fluoroscopy
+        2    # Thalassemia
+    ]
 
     # Predict heart disease
     prediction_score, binary_output = predict_heart_disease(features)
@@ -228,220 +126,6 @@ def heart_disease_assessment():
     speak(additional_suggestions)
 
 
-# def heart_disease_command():
-#     speak("Please provide the following health metrics for prediction.")
-#     # Take user inputs interactively or use example values
-#     features = [
-#         44, # Age
-#         1,  # Gender
-#         0,  # Chest pain type
-#         112, # Resting blood pressure
-#         290, # Cholesterol
-#         0,   # Fasting blood sugar
-#         0,   # Resting ECG
-#         153, # Max heart rate achieved
-#         0,   # Exercise-induced angina
-#         0, # Old peak
-#         2,   # Slope of the peak exercise ST segment
-#         1,   # Number of major vessels (0-3) colored by fluoroscopy
-#         2    # Thalassemia
-#     ]
-#     result = predict_heart_disease(features)
-#     if result == 1:
-#         speak("The prediction indicates a high likelihood of heart disease.")
-#     else:
-#         speak("The prediction indicates a low likelihood of heart disease.")
-
-# def suggest_improvements(metrics):
-#     suggestions = []
-#     # Extract individual metrics
-#     age, gender, chest_pain, bp, cholesterol, fasting_sugar, ecg, max_heart_rate, angina, old_peak, st_slope, vessels, thalassemia = metrics
-
-#     # Check each metric and provide specific suggestions
-#     if bp > 120:
-#         suggestions.append(f"Your blood pressure is {bp} mmHg, which is above the normal range. "
-#                            "Consider lifestyle changes like reducing salt intake, managing stress, "
-#                            "and regular exercise. Consult a healthcare provider if needed.")
-#     if cholesterol > 200:
-#         suggestions.append(f"Your cholesterol level is {cholesterol} mg/dL, which is high. "
-#                            "Adopt a low-cholesterol diet rich in fruits, vegetables, and whole grains, "
-#                            "and aim for regular physical activity to help lower it.")
-#     if max_heart_rate < 100:
-#         suggestions.append(f"Your maximum heart rate achieved is {max_heart_rate}, which is below the optimal range. "
-#                            "Incorporate more cardiovascular exercises like brisk walking, jogging, or cycling "
-#                            "to improve your heart rate capacity.")
-#     if fasting_sugar > 1:
-#         suggestions.append(f"Your fasting blood sugar level is elevated. Focus on a balanced diet with low sugar intake, "
-#                            "regular physical activity, and monitoring your glucose levels. If high levels persist, consult a doctor.")
-#     if angina == 1:
-#         suggestions.append("Exercise-induced angina was detected. Avoid strenuous activities without medical advice, "
-#                            "and consult a cardiologist for an exercise plan that suits your heart health needs.")
-    
-#     return "\n".join(suggestions) if suggestions else "All metrics appear to be within normal ranges."
-
-
-
-
-
-
-
-# def heart_disease_command():
-#     speak("Please provide the following health metrics for prediction. I will ask you each one by one.")
-    
-#     # Collecting health metrics interactively
-#     try:
-#         speak("What is your age?")
-#         age = int(listen())
-
-#         speak("What is your gender? Enter 1 for male and 0 for female.")
-#         gender = int(listen())
-
-#         speak("What is your chest pain type? Enter a number between 0 and 3.")
-#         chest_pain_type = int(listen())
-
-#         speak("What is your resting blood pressure in mm Hg?")
-#         resting_bp = int(listen())
-
-#         speak("What is your cholesterol level in mg/dl?")
-#         cholesterol = int(listen())
-
-#         speak("Is your fasting blood sugar greater than 120 mg/dl? Answer 1 for yes, 0 for no.")
-#         fasting_blood_sugar = int(listen())
-
-#         speak("What is your resting ECG? Answer 0, 1, or 2.")
-#         resting_ecg = int(listen())
-
-#         speak("What is your max heart rate achieved?")
-#         max_heart_rate = int(listen())
-
-#         speak("Do you have exercise-induced angina? Answer 1 for yes, 0 for no.")
-#         exercise_angina = int(listen())
-
-#         speak("What is your old peak value?")
-#         old_peak = float(listen())
-
-#         speak("What is the slope of the peak exercise ST segment? Enter 0, 1, or 2.")
-#         slope = int(listen())
-
-#         speak("How many major vessels are colored by fluoroscopy? Enter a number between 0 and 3.")
-#         vessels = int(listen())
-
-#         speak("What is your thalassemia status?")
-#         thalassemia = int(listen())
-
-#         # Collect all the inputs into a list
-#         features = [age, gender, chest_pain_type, resting_bp, cholesterol, fasting_blood_sugar, resting_ecg,
-#                     max_heart_rate, exercise_angina, old_peak, slope, vessels, thalassemia]
-        
-#         # Predict heart disease based on the input features
-#         result = predict_heart_disease(features)
-        
-#         if result == 1:
-#             speak("The prediction indicates a high likelihood of heart disease.")
-#         else:
-#             speak("The prediction indicates a low likelihood of heart disease.")
-    
-#     except ValueError:
-#         speak("Invalid input detected. Please provide valid numerical values for each metric.")
-
-
-# def convert_to_int(value, options_map):
-#     """Converts a string response to corresponding integer values based on a map."""
-#     value = value.lower().strip()
-#     if value in options_map:
-#         return options_map[value]
-#     else:
-#         return None  # If the value is not in the valid options map
-
-
-# def get_valid_input(prompt, options_map=None, input_type=int):
-#     """Generalized function to handle user input validation."""
-#     while True:
-#         speak(prompt)
-#         response = listen()
-        
-#         if response:  # If Jarvis detects speech
-#             response = response.strip().lower()
-            
-#             # If options_map is provided, convert the response to corresponding value
-#             if options_map:
-#                 converted_value = convert_to_int(response, options_map)
-#                 if converted_value is not None:
-#                     return converted_value
-#                 else:
-#                     speak(f"Invalid input. Please provide one of the following options: {', '.join(options_map.keys())}.")
-#             else:
-#                 try:
-#                     # Convert the response to the required input type
-#                     return input_type(response)
-#                 except ValueError:
-#                     speak("Invalid input. Please provide a valid number.")
-#         else:
-#             speak("I didn't understand that. Please speak clearly and try again.")
-
-# def get_gender_input():
-#     """Handles gender input, accepts male or female and converts to 1 or 0."""
-#     while True:
-#         speak("What is your gender? Please say male or female.")
-#         response = listen().lower()
-        
-#         if response == "male":
-#             return 1
-#         elif response == "female":
-#             return 0
-#         else:
-#             speak("I didn't understand that. Please say either male or female.")
-
-# def get_fasting_blood_sugar_input():
-#     """Handles fasting blood sugar input, accepts yes or no and converts to 1 or 0."""
-#     while True:
-#         speak("Is your fasting blood sugar greater than 120 mg/dl? Please say yes or no.")
-#         response = listen().lower()
-        
-#         if response == "yes":
-#             return 1
-#         elif response == "no":
-#             return 0
-#         else:
-#             speak("I didn't understand that. Please say either yes or no.")
-
-# def heart_disease_command():
-#     speak("Please provide the following health metrics for prediction. I will ask you each one by one.")
-    
-#     # Collecting health metrics interactively with validation
-#     age = get_valid_input("What is your age?", input_type=int)
-#     gender = get_gender_input()  # Get gender as 1 for male and 0 for female
-#     chest_pain_type = get_valid_input("What is your chest pain type? Enter low, medium, or high.", 
-#                                       options_map={'low': 0, 'medium': 1, 'high': 2}, input_type=int)
-#     resting_bp = get_valid_input("What is your resting blood pressure in mm Hg?", input_type=int)
-#     cholesterol = get_valid_input("What is your cholesterol level in mg/dl?", input_type=int)
-#     fasting_blood_sugar = get_fasting_blood_sugar_input()  # Get fasting blood sugar as 1 for yes and 0 for no
-#     resting_ecg = get_valid_input("What is your resting ECG? Enter low, medium, or high.", 
-#                                   options_map={'low': 0, 'medium': 1, 'high': 2}, input_type=int)
-#     max_heart_rate = get_valid_input("What is your max heart rate achieved?", input_type=int)
-#     exercise_angina = get_valid_input("Do you have exercise-induced angina? Answer yes or no.", 
-#                                       options_map={'yes': 1, 'no': 0}, input_type=int)
-#     old_peak = get_valid_input("What is your old peak value?", input_type=float)
-#     slope = get_valid_input("What is the slope of the peak exercise ST segment? Enter low, medium, or high.", 
-#                             options_map={'low': 0, 'medium': 1, 'high': 2}, input_type=int)
-#     vessels = get_valid_input("How many major vessels are colored by fluoroscopy? Enter low, medium, or high.", 
-#                               options_map={'low': 0, 'medium': 1, 'high': 2}, input_type=int)
-#     thalassemia = get_valid_input("What is your thalassemia status? Enter low, medium, or high.", 
-#                                   options_map={'low': 0, 'medium': 1, 'high': 2}, input_type=int)
-    
-#     # Collect all the inputs into a list
-#     features = [age, gender, chest_pain_type, resting_bp, cholesterol, fasting_blood_sugar, resting_ecg,
-#                 max_heart_rate, exercise_angina, old_peak, slope, vessels, thalassemia]
-    
-#     # Predict heart disease based on the input features
-#     result = predict_heart_disease(features)
-
-
-
-
-
-
-
 def wishMe():
     hour = int(datetime.datetime.now().hour)
     if hour >= 0 and hour < 12:
@@ -452,7 +136,10 @@ def wishMe():
         speak("Good Evening!")
     speak("Welcome Sir. How can I Help you?")
 
+
+
 def takeCommand():
+
     r = sr.Recognizer()
 
     with sr.Microphone() as source:
@@ -473,6 +160,7 @@ def takeCommand():
        
     except Exception as e:
         return ""
+    
     return query.lower()
 
 @eel.expose
