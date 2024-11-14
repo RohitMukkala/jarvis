@@ -57,3 +57,7 @@ def heart_disease_command():
     
     except ValueError:
         speak("Invalid input detected. Please provide valid numerical values for each metric.")
+
+
+
+I’m Jarvis, your virtual assistant, here to make life easier!

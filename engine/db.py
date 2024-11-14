@@ -7,23 +7,23 @@ cursor = con.cursor()
 query = "CREATE TABLE IF NOT EXISTS sys_command(id integer primary key, name VARCHAR(100), path VARCHAR(1000))"
 cursor.execute(query)
 
-# query = "DELETE FROM sys_command WHERE rowid = 2"
+# query = "DELETE FROM web_command WHERE rowid = 2"
 # cursor.execute(query)
 # con.commit()
 
 
 
 
-query = "INSERT INTO sys_command VALUES (null,'pictures', 'C:\\Users\\__msi__\\Pictures')"
-cursor.execute(query)
-con.commit()
+# query = "INSERT INTO sys_command VALUES (null,'command prompt', 'c:\\Windows\\system32\\cmd.exe')"
+# cursor.execute(query)
+# con.commit()
 
 # query = "CREATE TABLE IF NOT EXISTS web_command(id integer primary key, name VARCHAR(100), url VARCHAR(1000))"
 # cursor.execute(query)
 
-# query = "INSERT INTO web_command VALUES (null,'youtube', 'https://www.youtube.com/')"
-# cursor.execute(query)
-# con.commit()
+query = "INSERT INTO web_command VALUES (null,'google', 'https://www.google.com/')"
+cursor.execute(query)
+con.commit()
 
 # Create a table with the desired columns
 # cursor.execute('''CREATE TABLE IF NOT EXISTS contacts (id integer primary key, name VARCHAR(200), mobile_no VARCHAR(255), email VARCHAR(255) NULL)''')
