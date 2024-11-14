@@ -7,7 +7,14 @@ cursor = con.cursor()
 query = "CREATE TABLE IF NOT EXISTS sys_command(id integer primary key, name VARCHAR(100), path VARCHAR(1000))"
 cursor.execute(query)
 
-query = "INSERT INTO sys_command VALUES (null,'Command Prompt', 'C:\\Windows\\system32\\cmd.exe')"
+# query = "DELETE FROM sys_command WHERE rowid = 2"
+# cursor.execute(query)
+# con.commit()
+
+
+
+
+query = "INSERT INTO sys_command VALUES (null,'pictures', 'C:\\Users\\__msi__\\Pictures')"
 cursor.execute(query)
 con.commit()
 

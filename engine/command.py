@@ -222,19 +222,14 @@ def allCommands(message=1):
                 speak(results)
             elif "predict heart disease" in query:
                  heart_disease_assessment()
+            elif 'search in google' in query:
+                query = query.replace("search in google", "")
+                webbrowser.open(f"https://www.google.com/search?q={query}")
             elif 'search in youtube' in query: 
                 query = query.replace("search in youtube", "")
                 webbrowser.open(f"www.youtube.com/results?search_query={query}")
             elif 'close chrome' in query:
                 os.system("taskkill /f /im chrome.exe")
-            elif 'close youtube' in query:
-                os.system("taskkill /f /im msedge.exe")
-            elif 'open google' in query:
-                speak("What should I search?")
-                qry = takeCommand().lower()
-                webbrowser.open(f"{qry}")
-            elif 'close google' in query:
-                os.system("taskkill /f /im msedge.exe")
             elif 'shut down the system' in query:
                 os.system("shutdown /s /t 5")
             elif 'restart the system' in query:
@@ -243,7 +238,7 @@ def allCommands(message=1):
                 os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
             elif 'close command prompt' in query:
                 os.system("taskkill /f /im cmd.exe")
-            elif 'open camera' in query:
+            elif 'on camera' in query:
                 cap = cv2.VideoCapture(0)
                 while True:
                     ret, img = cap.read()
@@ -271,16 +266,16 @@ def allCommands(message=1):
             elif 'volume down' in query:
                 for _ in range(5):
                     pyautogui.press("volumedown")
-            elif 'mute' in query:
+            elif 'unmute' in query or 'mute' in query:
                 pyautogui.press("volumemute")
             elif 'refresh' in query:
                 pyautogui.hotkey('ctrl', 'r')
             elif 'scroll down' in query:
                 pyautogui.scroll(-1000)
             elif 'who are you' in query:
-                speak('My name is Six. I am programmed to perform tasks based on my creator’s commands.')
+                speak('I am Jarvis, designed to execute tasks based on the commands from my creator, Mukkala Rohit.')
             elif 'who created you' in query:
-                speak("I am created with Python in Visual Studio Code.")
+                speak("I am Jarvis, developed using Python in Visual Studio Code, created by Mukkala Rohit to carry out tasks based on his commands.")
             elif 'take screenshot' in query:
                 speak('Tell me a name for the file.')
                 name = takeCommand().lower()
@@ -288,9 +283,6 @@ def allCommands(message=1):
                 img = pyautogui.screenshot()
                 img.save(f"{name}.png")
                 speak("Screenshot saved.")
-            # elif 'jarvis' in query:
-            #     speak("Yes Sir!")
-            #     print("Yes Sir!")
             elif 'calculate' in query:
                 speak("Ready")
                 r = sr.Recognizer()
