@@ -213,7 +213,7 @@ def allCommands(message=1):
                     speak("Invalid mode selected. Please try again.")
         else:
             # Additional commands integrated here
-            if 'wikipedia' in query:
+            if any(keyword in query for keyword in ["wikipedia", "who is", "where is", "what is", "how is"]):
                 speak('Searching Wikipedia...')
                 query = query.replace("wikipedia", "")
                 results = wikipedia.summary(query, sentences=2)

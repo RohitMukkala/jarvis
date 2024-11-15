@@ -61,3 +61,14 @@ def heart_disease_command():
 
 
 I’m Jarvis, your virtual assistant, here to make life easier!
+
+
+import wolframalpha
+
+client = wolframalpha.Client('')
+
+while True :
+    query = str(input('query: '))
+    res = client.query(query)
+    output = next(res.results).text
+    print(output)

@@ -35,6 +35,8 @@ def check_all_messages(message):
     response('I\'m doing fine, and you?', ['how', 'are', 'you', 'doing'], required_words=['how'])
     response('Thank You', ['i', 'love', 'code', 'palace'], required_words=['code', 'palace'])
     response(long.R_EATING, ['what', 'you', 'eat'], required_words=['you', 'eat'])
+    response("I'm quite partial to blue. It matches my calm AI personality!", ['favorite', 'color'], required_words=['color'])
+    response("I run on data, so let's say bytes are my favorite food!", ['favorite', 'food'], required_words=['food'])
     response("You're very welcome!", ['thanks', 'thank', 'appreciate'], single_response=True)
     response("Thank you! I'm here to help!", ['you', 'are', 'great', 'awesome', 'helpful'], required_words=['great'])
     response(long.C_DO, ['what', 'can', 'you', 'do'], required_words=['can', 'do'])
@@ -58,23 +60,6 @@ def check_all_messages(message):
             response(long.get_weather(city), ['weather', 'in'], required_words=['weather', 'in'])
 
 
-
-# def handle_reminder(message):
-#     # Extract time and message for the reminder
-#     time_match = re.search(r'(\d{1,2}:\d{2})', message)
-#     reminder_message = message.replace("remind me to", "").strip() if time_match else None
-
-#     if time_match and reminder_message:
-#         reminder_time_str = time_match.group(0)
-#         reminder_time = datetime.strptime(reminder_time_str, "%H:%M").replace(
-#             year=datetime.now().year, month=datetime.now().month, day=datetime.now().day
-#         )
-#         # Set the reminder
-#         return set_reminder(reminder_message, reminder_time)
-#     else:
-#         return None
-
-
     best_match = max(highest_prob_list, key=highest_prob_list.get)
     return long.unknown() if highest_prob_list[best_match] < 1 else best_match
 
@@ -82,3 +67,4 @@ def get_response(user_input):
     split_message = re.split(r'\s|[,;:?.!-]\s*', user_input.lower())
     response = check_all_messages(split_message)
     return response
+
