@@ -1,7 +1,7 @@
-# Jarvis - AI-Powered Personal Assistant
+# NeuraLink: The Futuristic AI Command Hub
 
 ## Overview
-Jarvis is an AI-powered personal assistant integrating speech recognition, face authentication, a heart disease prediction model, and more. This project combines Python, TensorFlow, and web technologies for an interactive user experience.
+NeuraLink is an AI-powered personal assistant integrating speech recognition, face authentication, a heart disease prediction model, and more. This project combines Python, TensorFlow, and web technologies for an interactive user experience.
 
 ---
 
@@ -200,7 +200,7 @@ To enable weather and news functionalities, users need to add their own API keys
 
 ---
 
-### Step 7: Launch Jarvis
+### Step 7: Launch NeuraLink
 Start the application:
 ```bash
 python run.py
