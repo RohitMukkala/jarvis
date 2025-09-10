@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jarvis - Your Personal Desktop Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        scroll-behavior: smooth;
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6, #93c5fd);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+      .glass-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+      .command-card {
+        background: #1f2937; /* gray-800 */
+        border: 1px solid #374151; /* gray-700 */
+        transition: all 0.3s ease;
+      }
+      .command-card:hover {
+        border-color: #3b82f6; /* blue-500 */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <!-- Header -->
+    <header
+      class="fixed top-0 left-0 right-0 z-50 bg-gray-900 bg-opacity-80 backdrop-blur-md"
+    >
+      <div
+        class="container mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <h1 class="text-2xl font-bold tracking-wider">JARVIS</h1>
+        <nav class="hidden md:flex space-x-8 items-center">
+          <a
+            href="#features"
+            class="hover:text-blue-400 transition duration-300"
+            >Features</a
+          >
+          <a
+            href="#commands"
+            class="hover:text-blue-400 transition duration-300"
+            >Commands</a
+          >
+          <a href="#about" class="hover:text-blue-400 transition duration-300"
+            >About</a
+          >
+          <a
+            href="#download"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+            >Download</a
+          >
+        </nav>
+        <button
+          class="md:hidden text-white focus:outline-none"
+          id="mobile-menu-button"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16m-7 6h7"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+        <a
+          href="#features"
+          class="block py-2 text-center hover:text-blue-400 transition duration-300"
+          >Features</a
+        >
+        <a
+          href="#commands"
+          class="block py-2 text-center hover:text-blue-400 transition duration-300"
+          >Commands</a
+        >
+        <a
+          href="#about"
+          class="block py-2 text-center hover:text-blue-400 transition duration-300"
+          >About</a
+        >
+        <a
+          href="#download"
+          class="block mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center"
+          >Download</a
+        >
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24">
+      <!-- Hero Section -->
+      <section class="relative text-center py-20 md:py-32 px-6 overflow-hidden">
+        <!-- ... existing hero section code ... -->
+        <div class="absolute inset-0 gradient-bg opacity-30"></div>
+        <div class="relative z-10 container mx-auto">
+          <h2 class="text-4xl md:text-6xl font-black mb-4 leading-tight">
+            Your Desktop, Voice-Activated.
+          </h2>
+          <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            Jarvis is a Python-powered desktop assistant that listens,
+            understands, and acts on your voice commands. Open apps, get
+            information, and secure your system—all hands-free.
+          </p>
+          <a
+            href="#download"
+            class="bg-white text-blue-700 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105 inline-block"
+          >
+            Get Jarvis
+          </a>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" class="py-20 bg-gray-900">
+        <!-- ... existing features section code ... -->
+        <div class="container mx-auto px-6 text-center">
+          <h3 class="text-3xl font-bold mb-2">What Jarvis Can Do</h3>
+          <p class="text-gray-400 mb-12">Powered by Python and your voice.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="glass-card p-8 rounded-2xl text-left">
+              <div class="text-blue-400 mb-4">
+                <svg
+                  class="w-10 h-10"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  ></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold mb-2">Hands-Free Control</h4>
+              <p class="text-gray-300">
+                Use voice commands to open websites, play music, get the current
+                time, and even hear a joke.
+              </p>
+            </div>
+            <div class="glass-card p-8 rounded-2xl text-left">
+              <div class="text-blue-400 mb-4">
+                <svg
+                  class="w-10 h-10"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold mb-2">Real-Time Information</h4>
+              <p class="text-gray-300">
+                Ask for the latest news headlines, check the weather, or find
+                locations, all with simple voice queries.
+              </p>
+            </div>
+            <div class="glass-card p-8 rounded-2xl text-left">
+              <div class="text-blue-400 mb-4">
+                <svg
+                  class="w-10 h-10"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  ></path>
+                </svg>
+              </div>
+              <h4 class="text-xl font-bold mb-2">Facial Recognition Login</h4>
+              <p class="text-gray-300">
+                Secure your assistant with a cutting-edge facial recognition
+                system. Jarvis only activates for you.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Commands Section -->
+      <section id="commands" class="py-20">
+        <div class="container mx-auto px-6 text-center">
+          <h3 class="text-3xl font-bold mb-2">Try These Commands</h3>
+          <p class="text-gray-400 mb-12">Just start by saying "Jarvis..."</p>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left"
+          >
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Open Google"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Launches google.com in your browser.
+              </p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Open YouTube"</p>
+              <p class="text-sm text-gray-500 mt-1">Launches youtube.com.</p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"What's the time?"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Tells you the current time.
+              </p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Tell me a joke"</p>
+              <p class="text-sm text-gray-500 mt-1">Shares a random joke.</p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Play music"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Plays the first song in your music directory.
+              </p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Show me the latest news"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Fetches and reads top news headlines.
+              </p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Weather in [City Name]"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Provides the current weather for a city.
+              </p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Where is [Location]"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Finds a location on Google Maps.
+              </p>
+            </div>
+            <div class="command-card p-6 rounded-lg">
+              <p class="text-gray-300">"Goodbye"</p>
+              <p class="text-sm text-gray-500 mt-1">
+                Shuts down the Jarvis assistant.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="py-20 bg-gray-900">
+        <!-- ... existing about section code ... -->
+        <div class="container mx-auto px-6 md:flex items-center gap-12">
+          <div class="md:w-1/2 mb-8 md:mb-0">
+            <img
+              src="https://placehold.co/600x400/1e3a8a/ffffff?text=Jarvis+In+Action"
+              alt="Jarvis App Screenshot"
+              class="rounded-2xl shadow-2xl"
+            />
+          </div>
+          <div class="md:w-1/2">
+            <h3 class="text-3xl font-bold mb-4">More Than Just an Assistant</h3>
+            <p class="text-gray-300 mb-4">
+              Jarvis started as a personal project to explore the power of
+              Python for desktop automation. It combines a voice-activated
+              command interface with an intelligent chatbot for conversation.
+            </p>
+            <p class="text-gray-300">
+              It also includes experimental features like a heart disease
+              prediction model, showcasing how machine learning can be
+              integrated into a daily-use desktop application.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Download Section -->
+      <section id="download" class="py-20 gradient-bg">
+        <!-- ... existing download section code ... -->
+        <div class="container mx-auto px-6 text-center">
+          <h3 class="text-4xl font-bold mb-4">Ready to Try Jarvis?</h3>
+          <p class="text-gray-200 mb-8 max-w-2xl mx-auto">
+            Download the latest version for your desktop. You'll need Python and
+            the dependencies listed in the README to get started.
+          </p>
+          <a
+            href="#"
+            class="bg-white text-blue-700 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105 inline-block"
+          >
+            Download from GitHub
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 border-t border-gray-800">
+      <div class="container mx-auto px-6 py-8 text-center text-gray-400">
+        <p>&copy; 2024 Jarvis Project. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      mobileMenuButton.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+    </script>
+  </body>
+</html>
