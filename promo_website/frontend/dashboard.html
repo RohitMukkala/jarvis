@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Jarvis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 text-white p-4 sm:p-8">
+    <div class="max-w-6xl mx-auto">
+      <header class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-cyan-400">
+          Welcome, <span id="username">...</span>!
+        </h1>
+        <button
+          id="logoutBtn"
+          class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+        >
+          Logout
+        </button>
+      </header>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+        <div class="flex items-center gap-3 border-b border-gray-700 pb-3 mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-cyan-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
+          </svg>
+          <h2 class="text-xl font-bold text-cyan-500">Daily Briefing</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 items-start">
+          <div class="text-center md:text-left">
+            <p class="text-4xl font-bold" id="current-time">--:--</p>
+            <p class="text-gray-400" id="current-date">Loading...</p>
+          </div>
+          <div
+            id="weather-widget"
+            class="flex items-center justify-center gap-4"
+          ></div>
+          <div id="news-widget">
+            <h3 class="font-bold mb-2 text-center md:text-left text-gray-300">
+              Top Headlines
+            </h3>
+            <ul
+              id="news-list"
+              class="list-disc list-inside text-sm text-gray-300 space-y-1.5"
+            >
+              <li>Loading news...</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div
+          class="bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-cyan-500/20 hover:-translate-y-1"
+        >
+          <div
+            class="flex items-center gap-3 border-b border-gray-700 pb-3 mb-4"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-cyan-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+            <h2 class="text-xl font-bold text-cyan-500">AI Health Analysis</h2>
+          </div>
+          <p class="text-gray-400 mb-6 text-sm">
+            Use our AI to predict heart health based on medical reports or
+            manual input.
+          </p>
+          <a
+            href="./health_predictor.html"
+            class="block w-full text-center bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-4 rounded transition-colors duration-300"
+            >Go to Health Predictor</a
+          >
+        </div>
+
+        <div
+          class="bg-gray-800 p-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-cyan-500/20 hover:-translate-y-1"
+        >
+          <div
+            class="flex items-center gap-3 border-b border-gray-700 pb-3 mb-4"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-cyan-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+              />
+            </svg>
+            <h2 class="text-xl font-bold text-cyan-500">Recent Activity</h2>
+          </div>
+          <div id="activityLog" class="space-y-4 pt-2">
+            <p class="text-gray-400">Loading activity...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- TIME & DATE SCRIPT ---
+      function updateTime() {
+        const timeEl = document.getElementById("current-time");
+        const dateEl = document.getElementById("current-date");
+        const now = new Date();
+        timeEl.textContent = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        dateEl.textContent = now.toLocaleDateString([], {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      // --- MAIN DASHBOARD SCRIPT ---
+      document.addEventListener("DOMContentLoaded", async () => {
+        updateTime();
+        setInterval(updateTime, 1000); // Update time every second
+
+        const token = localStorage.getItem("jarvis-token");
+        if (!token) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+          localStorage.removeItem("jarvis-token");
+          localStorage.removeItem("jarvis-username");
+          window.location.href = "login.html";
+        });
+
+        // --- Fetch and Populate Dashboard Data ---
+        async function fetchDashboardData() {
+          try {
+            const res = await fetch("http://127.0.0.1:5000/api/dashboard", {
+              headers: { "x-access-token": token },
+            });
+            if (!res.ok) throw new Error("Failed to fetch dashboard data");
+            const data = await res.json();
+            document.getElementById("username").textContent =
+              data.username || "User";
+            // Populate activity log...
+          } catch (err) {
+            console.error("Dashboard Error:", err);
+          }
+        }
+
+        // --- NEW: Fetch and Populate Daily Briefing ---
+        async function fetchDailyBriefing() {
+          try {
+            const res = await fetch(
+              "http://127.0.0.1:5000/api/daily_briefing",
+              { headers: { "x-access-token": token } }
+            );
+            if (!res.ok) throw new Error("Failed to fetch briefing data");
+            const data = await res.json();
+
+            // Populate Weather
+            const weatherWidget = document.getElementById("weather-widget");
+            if (data.weather && !data.weather.error) {
+              weatherWidget.innerHTML = `
+                                <img src="http://openweathermap.org/img/wn/${data.weather.icon}@2x.png" alt="Weather icon" class="w-16 h-16">
+                                <div>
+                                    <p class="text-3xl font-bold">${data.weather.temperature}°C</p>
+                                    <p class="text-gray-400">${data.weather.description}</p>
+                                </div>
+                            `;
+            } else {
+              weatherWidget.textContent =
+                data.weather.error || "Weather unavailable.";
+            }
+
+            // Populate News
+            const newsList = document.getElementById("news-list");
+            newsList.innerHTML = ""; // Clear "Loading..." text
+            if (
+              data.news &&
+              data.news.articles &&
+              data.news.articles.length > 0
+            ) {
+              data.news.articles.forEach((article) => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+
+                a.href = article.url; // Set the link URL
+                a.textContent = article.title; // Set the link text
+                a.target = "_blank"; // Open link in a new tab
+                a.rel = "noopener noreferrer"; // Security best practice
+                a.className =
+                  "hover:text-cyan-400 transition-colors duration-200"; // Optional styling
+
+                li.appendChild(a);
+                newsList.appendChild(li);
+              });
+            } else {
+              newsList.innerHTML = `<li>${
+                data.news.error || "No news headlines available."
+              }</li>`;
+            }
+          } catch (err) {
+            console.error("Briefing Error:", err);
+          }
+        }
+
+        // Fetch all data when page loads
+        fetchDashboardData();
+        fetchDailyBriefing();
+      });
+    </script>
+  </body>
+</html>
