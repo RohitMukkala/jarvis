@@ -11,19 +11,20 @@ import joblib
 from tensorflow.keras.models import load_model
 import fitz  # PyMuPDF
 import re
-import requests  # ✅ NEW IMPORT
+import requests
 from dotenv import load_dotenv
-load_dotenv()  # Load variables from .env if available
 
+# Load environment variables
+load_dotenv()
 
 # --- Flask App ---
 app = Flask(__name__)
-CORS(app)  # Allow frontend to access backend
+CORS(app)
 
 # --- Config from environment ---
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-key')
 
-# --- IMPORTANT: API KEYS LOADED FROM ENV ---
+# --- API Keys ---
 OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
 GNEWS_API_KEY = os.environ.get("GNEWS_API_KEY")
 
@@ -33,9 +34,11 @@ DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
 DB_NAME = os.environ.get('DB_NAME', 'jarvis_db')
 
 # --- Load AI Model and Scaler ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 try:
-    model = load_model('heart_disease_model.h5')
-    scaler = joblib.load('scaler.save')
+    model = load_model(os.path.join(BASE_DIR, 'heart_disease_model.h5'))
+    scaler = joblib.load(os.path.join(BASE_DIR, 'scaler.save'))
 except Exception as e:
     print(f"Error loading model/scaler: {e}")
     model, scaler = None, None
@@ -99,34 +102,25 @@ def get_weather(city="Amaravati"):
     except requests.exceptions.RequestException as e:
         return {"error": f"Could not fetch weather data: {e}"}
 
-# In your Python Flask file
-
 def get_news():
     if not GNEWS_API_KEY:
         return {"error": "GNews API key not configured."}
     try:
-        # GNews API URL is different
         url = f"https://gnews.io/api/v4/top-headlines?country=in&lang=en&token={GNEWS_API_KEY}"
-
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
 
-        # The structure of the response from GNews is the same, so no other changes are needed
         articles = []
-        for article in data.get("articles", [])[:5]: # Get top 5
+        for article in data.get("articles", [])[:5]:
             articles.append({
                 "title": article.get("title"),
                 "source": article.get("source", {}).get("name"),
                 "url": article.get("url")
             })
-
         return {"articles": articles}
-
     except requests.exceptions.RequestException as e:
         return {"error": f"Could not fetch news data from GNews: {e}"}
-
-
 
 # --- Routes ---
 @app.route('/api/register', methods=['POST'])
@@ -240,7 +234,6 @@ def predict_health_pdf(current_user):
         pdf_document = fitz.open(stream=file.read(), filetype="pdf")
         text = "".join([page.get_text() for page in pdf_document])
 
-        # --- Feature mapping ---
         feature_order = [
             "Age", "Sex", "CP", "Trestbps", "Chol", "FBS",
             "RestECG", "Thalach", "Exang", "Oldpeak", "Slope", "CA", "Thal"
@@ -297,13 +290,11 @@ def predict_health_pdf(current_user):
     except Exception as e:
         return jsonify({'message': f'Error processing PDF: {str(e)}'}), 500
 
-# --- NEW ENDPOINT FOR THE DAILY BRIEFING ---
 @app.route('/api/daily_briefing', methods=['GET'])
 @token_required
 def daily_briefing(current_user):
     weather_data = get_weather()
     news_data = get_news()
-    
     return jsonify({
         "weather": weather_data,
         "news": news_data
@@ -312,4 +303,5 @@ def daily_briefing(current_user):
 # --- Run App ---
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False') == 'True'
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
