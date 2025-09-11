@@ -6,7 +6,8 @@ PyJWT==2.10.1
 numpy==2.0.2
 scikit-learn==1.5.2
 joblib==1.4.2
-tensorflow==2.18.0
+tensorflow-cpu
 requests==2.32.3
 PyMuPDF
 python-dotenv
+gunicorn
