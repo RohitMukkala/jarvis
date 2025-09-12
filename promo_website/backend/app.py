@@ -19,7 +19,12 @@ load_dotenv()
 
 # --- Flask App ---
 app = Flask(__name__)
-CORS(app)
+frontend_url = "https://jarvis-one-teal.vercel.app"
+CORS(app, origins=[
+    frontend_url,
+    "http://127.0.0.1:5500",
+    "http://localhost:5500"
+])
 
 # --- Config from environment ---
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-key')
