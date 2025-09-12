@@ -20,16 +20,16 @@ load_dotenv()
 # --- Flask App ---
 app = Flask(__name__)
 
-# --- FIX #1: CORRECT CORS CONFIGURATION ---
-# This block replaces the old CORS(app) line.
-# It explicitly allows your live frontend and local development addresses.
+# --- THIS IS THE FINAL FIX ---
+# We are explicitly telling the backend to accept requests from our live Vercel frontend
+# and from our local machine for testing purposes.
 frontend_url = "https://jarvis-one-teal.vercel.app"
 CORS(app, origins=[
     frontend_url,
     "http://127.0.0.1:5500",
     "http://localhost:5500"
 ])
-# ---------------------------------------------
+# -----------------------------
 
 # --- Config from environment ---
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-key')
@@ -42,10 +42,8 @@ DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_USER = os.environ.get('DB_USER', 'root')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
 DB_NAME = os.environ.get('DB_NAME', 'jarvis_db')
-# --- FIX #2: ADDED DB_PORT VARIABLE ---
-# This is required to connect to your TiDB Cloud database which uses a non-standard port.
+# Added DB_PORT to connect to TiDB Cloud correctly
 DB_PORT = os.environ.get('DB_PORT', 3306)
-# ------------------------------------
 
 # --- Load AI Model and Scaler ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -65,9 +63,8 @@ def get_db_connection():
             user=DB_USER,
             password=DB_PASSWORD,
             database=DB_NAME,
-            # --- FIX #2: USE THE DB_PORT VARIABLE ---
+            # Added port to connection
             port=int(DB_PORT)
-            # ------------------------------------
         )
     return g.db
 
@@ -85,9 +82,8 @@ def token_required(f):
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
         try:
-            # Use timezone-aware datetime for JWT expiration check
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            conn = get_db_.connection()
+            conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
             cursor.execute("SELECT id, username, email FROM users WHERE id = %s", (data['user_id'],))
             current_user = cursor.fetchone()
@@ -97,9 +93,9 @@ def token_required(f):
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token!'}), 401
         except Exception as e:
-            # Provide a more generic error in production for security
-            print(f"Auth Error: {e}") # Log the real error for debugging
-            return jsonify({'message': 'An internal error occurred.'}), 500
+            print(f"Authentication Error: {str(e)}") # Log the actual error
+            return jsonify({'message': 'An internal server error occurred during authentication.'}), 500
+
 
         if not current_user:
             return jsonify({'message': 'User not found!'}), 401
@@ -165,6 +161,8 @@ def register():
         conn.commit()
     except mysql.connector.IntegrityError:
         return jsonify({'message': 'Username or email already exists'}), 409
+    except Exception as e:
+        return jsonify({'message': f'Database error: {str(e)}'}), 500
     finally:
         cursor.close()
 
@@ -178,30 +176,36 @@ def login():
 
     if not email or not password:
         return jsonify({'message': 'Missing credentials'}), 401
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+        user = cursor.fetchone()
+        cursor.close()
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
-    user = cursor.fetchone()
-    cursor.close()
+        if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+            return jsonify({'message': 'Invalid credentials'}), 401
 
-    if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
-        return jsonify({'message': 'Invalid credentials'}), 401
+        token = jwt.encode({
+            'user_id': user['id'],
+            'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+        }, app.config['SECRET_KEY'], algorithm="HS256")
 
-    token = jwt.encode({
-        'user_id': user['id'],
-        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
-    }, app.config['SECRET_KEY'], algorithm="HS256")
+        return jsonify({
+            'token': token,
+            'username': user['username'],
+            'user_id': user['id']
+        }), 200
+    except Exception as e:
+        print(f"Login Error: {str(e)}")
+        return jsonify({'message': f'An internal server error occurred during login.'}), 500
 
-    return jsonify({
-        'token': token,
-        'username': user['username'],
-        'user_id': user['id']
-    }), 200
 
 @app.route('/api/dashboard', methods=['GET'])
 @token_required
 def dashboard(current_user):
+    # This should ideally fetch real data, but mock is fine for now
     mock_activity = [
         {'timestamp': '2023-10-27 10:00:00', 'command': 'weather in London'},
         {'timestamp': '2023-10-27 10:02:15', 'command': 'open chrome'},
@@ -327,3 +331,4 @@ def daily_briefing(current_user):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
+
