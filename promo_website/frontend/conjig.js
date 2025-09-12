@@ -14,6 +14,6 @@ if (
 } else {
   // We are on a live server (like Vercel). Use the production backend URL.
   // ** IMPORTANT: Replace this with your actual Railway backend URL! **
-  API_BASE_URL = "jarvis-production-b333.up.railway.app";
+  API_BASE_URL = "https://jarvis-production-b333.up.railway.app";
   console.log("Running in PRODUCTION environment");
 }
