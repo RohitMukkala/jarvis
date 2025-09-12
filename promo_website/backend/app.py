@@ -187,13 +187,18 @@ def login():
         return jsonify({'message': 'Missing credentials'}), 401
     
     try:
+        # --- TEMPORARY DEBUGGING CODE ---
+        # This will print the current folder and all files in it to your Railway logs.
+        print(f"Current Directory: {os.getcwd()}")
+        print(f"Files in Directory: {os.listdir('.')}")
+        # --------------------------------
+
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
         user = cursor.fetchone()
         cursor.close()
 
-        # checkpw needs the stored hash to be encoded back to bytes for comparison
         if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
             return jsonify({'message': 'Invalid credentials'}), 401
 
@@ -210,7 +215,6 @@ def login():
     except Exception as e:
         print(f"Login Error: {str(e)}")
         return jsonify({'message': 'An internal server error occurred during login.'}), 500
-
 
 @app.route('/api/dashboard', methods=['GET'])
 @token_required
