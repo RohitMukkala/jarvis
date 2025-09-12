@@ -19,12 +19,17 @@ load_dotenv()
 
 # --- Flask App ---
 app = Flask(__name__)
+
+# --- FIX #1: CORRECT CORS CONFIGURATION ---
+# This block replaces the old CORS(app) line.
+# It explicitly allows your live frontend and local development addresses.
 frontend_url = "https://jarvis-one-teal.vercel.app"
 CORS(app, origins=[
     frontend_url,
     "http://127.0.0.1:5500",
     "http://localhost:5500"
 ])
+# ---------------------------------------------
 
 # --- Config from environment ---
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'super-secret-key')
@@ -37,6 +42,10 @@ DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_USER = os.environ.get('DB_USER', 'root')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
 DB_NAME = os.environ.get('DB_NAME', 'jarvis_db')
+# --- FIX #2: ADDED DB_PORT VARIABLE ---
+# This is required to connect to your TiDB Cloud database which uses a non-standard port.
+DB_PORT = os.environ.get('DB_PORT', 3306)
+# ------------------------------------
 
 # --- Load AI Model and Scaler ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +64,10 @@ def get_db_connection():
             host=DB_HOST,
             user=DB_USER,
             password=DB_PASSWORD,
-            database=DB_NAME
+            database=DB_NAME,
+            # --- FIX #2: USE THE DB_PORT VARIABLE ---
+            port=int(DB_PORT)
+            # ------------------------------------
         )
     return g.db
 
@@ -73,8 +85,9 @@ def token_required(f):
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
         try:
+            # Use timezone-aware datetime for JWT expiration check
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            conn = get_db_connection()
+            conn = get_db_.connection()
             cursor = conn.cursor(dictionary=True)
             cursor.execute("SELECT id, username, email FROM users WHERE id = %s", (data['user_id'],))
             current_user = cursor.fetchone()
@@ -83,6 +96,10 @@ def token_required(f):
             return jsonify({'message': 'Token expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token!'}), 401
+        except Exception as e:
+            # Provide a more generic error in production for security
+            print(f"Auth Error: {e}") # Log the real error for debugging
+            return jsonify({'message': 'An internal error occurred.'}), 500
 
         if not current_user:
             return jsonify({'message': 'User not found!'}), 401
@@ -173,7 +190,7 @@ def login():
 
     token = jwt.encode({
         'user_id': user['id'],
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
     }, app.config['SECRET_KEY'], algorithm="HS256")
 
     return jsonify({
@@ -306,7 +323,7 @@ def daily_briefing(current_user):
     })
 
 # --- Run App ---
+# This block is ignored by Gunicorn on Railway, but is useful for local testing
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False') == 'True'
-    app.run(debug=debug_mode, host='0.0.0.0', port=port)
+    app.run(debug=False, host='0.0.0.0', port=port)
