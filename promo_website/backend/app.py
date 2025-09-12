@@ -187,12 +187,6 @@ def login():
         return jsonify({'message': 'Missing credentials'}), 401
     
     try:
-        # --- TEMPORARY DEBUGGING CODE ---
-        # This will print the current folder and all files in it to your Railway logs.
-        print(f"Current Directory: {os.getcwd()}")
-        print(f"Files in Directory: {os.listdir('.')}")
-        # --------------------------------
-
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
