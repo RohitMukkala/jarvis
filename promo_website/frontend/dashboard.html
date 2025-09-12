@@ -172,7 +172,7 @@
         // --- Fetch and Populate Dashboard Data ---
         async function fetchDashboardData() {
           try {
-            const res = await fetch("http://127.0.0.1:5000/api/dashboard", {
+            const res = await fetch(`${API_BASE_URL}/api/dashboard`, {
               headers: { "x-access-token": token },
             });
             if (!res.ok) throw new Error("Failed to fetch dashboard data");
@@ -188,10 +188,9 @@
         // --- NEW: Fetch and Populate Daily Briefing ---
         async function fetchDailyBriefing() {
           try {
-            const res = await fetch(
-              "http://127.0.0.1:5000/api/daily_briefing",
-              { headers: { "x-access-token": token } }
-            );
+            const res = await fetch(`${API_BASE_URL}/api/daily_briefing`, {
+              headers: { "x-access-token": token },
+            });
             if (!res.ok) throw new Error("Failed to fetch briefing data");
             const data = await res.json();
 

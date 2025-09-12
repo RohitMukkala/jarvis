@@ -273,7 +273,7 @@
         }
 
         try {
-          const res = await fetch("http://127.0.0.1:5000/api/predict_health", {
+          const res = await fetch(`${API_BASE_URL}/api/predict_health`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -360,14 +360,11 @@
           formData.append("file", file);
 
           try {
-            const res = await fetch(
-              "http://127.0.0.1:5000/api/predict_health_pdf",
-              {
-                method: "POST",
-                headers: { "x-access-token": token },
-                body: formData,
-              }
-            );
+            const res = await fetch(`${API_BASE_URL}/api/predict_health_pdf`, {
+              method: "POST",
+              headers: { "x-access-token": token },
+              body: formData,
+            });
             const data = await res.json();
 
             if (res.ok) {
