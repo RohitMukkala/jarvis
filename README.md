@@ -182,6 +182,10 @@ python run.py
 - The system will recognize your face and grant access
 - Ensure good lighting for optimal recognition
 
+## Project Architecture
+
+![architecture](images/Untitled%20diagram%20_%20Mermaid%20Chart-2025-09-14-024539.png)
+
 ## Project Structure
 
 ```
